@@ -17,15 +17,18 @@ function App() {
   const [ info, setInfo ] = useState([])
   const [ personal, setPersonal ] = useState("name")
   const [ information, setInformation ] = useState([])
-
-  
   const fetchData = () => {
     axios.get("https://randomuser.me/api/")
     .then((res) => {
       console.log(res.data.results[0])
       setInfo(res.data.results[0])
       setInformation([res.data.results[0].name.title, res.data.results[0].name.first, res.data.results[0].name.last])
+      setPersonal("name")
     } )
+  }
+  const handleClick = (information, personal) => {
+    setInformation(information)
+    setPersonal(personal)
   }
   useEffect(() => {
     fetchData()
@@ -38,20 +41,20 @@ function App() {
         <img alt="img" src={info?.picture?.large} className="image" />
         <div className="personal-info" >
         <p>My {personal} is </p>
-        <p>{information.map((info) => (
-          <span>{info + " "} </span>
-        ))} </p>
+        {<p>{information.map((info,index) => (
+          <span key={index}>{info + " "} </span>
+        ))} </p>}
         </div>
         <div className="icons">
-          <acronym title="gender"><img src={woman} alt="man-woman" /> </acronym>
-          <acronym title="gender"><img src={mail} alt="man-woman" /> </acronym>
-          <acronym title="gender"><img src={growingMan} alt="man-woman" /> </acronym>
-          <acronym title="gender"><img src={map} alt="man-woman" /> </acronym>
-          <acronym title="gender"><img src={phone} alt="man-woman" /> </acronym>
-          <acronym title="gender"><img src={padlock} alt="man-woman" /> </acronym>
+          <acronym title="gender"><img src={info?.gender === "female" ? woman : man} alt="man-woman" onClick={ () => handleClick([info?.name?.title, info?.name?.first, info?.name?.last], "name" ) } /> </acronym>
+          <acronym title="email"><img src={mail} alt="man-woman" onClick={() => handleClick([info.email], "email")} /> </acronym>
+          <acronym title="age"><img src={info?.gender === "female" ? growingWoman : growingMan} alt="man-woman" onClick={() => handleClick([info?.dob?.age], "age")} /> </acronym>
+          <acronym title="street"><img src={map} alt="man-woman" onClick={() => handleClick([info?.location?.street?.number, info?.location?.street?.name], "street")} /> </acronym>
+          <acronym title="phone"><img src={phone} alt="man-woman" onClick={() => handleClick([info?.cell], "phone number")} /> </acronym>
+          <acronym title="password"><img src={padlock} alt="man-woman"  onClick={() => handleClick([info?.login?.password], "password")}/> </acronym>
         </div>
         <div className="buttons">
-          <button>NEW USER</button>
+          <button onClick={fetchData}>NEW USER</button>
           <button>ADD USER</button>
         </div>
       </div>
